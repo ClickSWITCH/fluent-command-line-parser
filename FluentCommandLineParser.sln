@@ -1,16 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentCommandLineParser", "FluentCommandLineParser\FluentCommandLineParser.csproj", "{74CDFA61-81D8-40F2-B536-949BABA15D3E}"
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentCommandLineParser", "FluentCommandLineParser\FluentCommandLineParser.csproj", "{F3BB0AC1-D127-4D21-B5EC-94C699E8F835}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentCommandLineParser.Tests", "FluentCommandLineParser.Tests\FluentCommandLineParser.Tests.csproj", "{A2546703-0B86-4515-BE5B-FAF85B756BDC}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D8DCB1C2-5F18-4F40-A583-723975F89C1A}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentCommandLineParser.Tests", "FluentCommandLineParser.Tests\FluentCommandLineParser.Tests.csproj", "{5F74762D-06C0-49B3-BD08-2E4C8AB9A2DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,16 +13,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{74CDFA61-81D8-40F2-B536-949BABA15D3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{74CDFA61-81D8-40F2-B536-949BABA15D3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{74CDFA61-81D8-40F2-B536-949BABA15D3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{74CDFA61-81D8-40F2-B536-949BABA15D3E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2546703-0B86-4515-BE5B-FAF85B756BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2546703-0B86-4515-BE5B-FAF85B756BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2546703-0B86-4515-BE5B-FAF85B756BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2546703-0B86-4515-BE5B-FAF85B756BDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3BB0AC1-D127-4D21-B5EC-94C699E8F835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3BB0AC1-D127-4D21-B5EC-94C699E8F835}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3BB0AC1-D127-4D21-B5EC-94C699E8F835}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3BB0AC1-D127-4D21-B5EC-94C699E8F835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F74762D-06C0-49B3-BD08-2E4C8AB9A2DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F74762D-06C0-49B3-BD08-2E4C8AB9A2DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F74762D-06C0-49B3-BD08-2E4C8AB9A2DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F74762D-06C0-49B3-BD08-2E4C8AB9A2DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD96843C-F419-4CB9-9D24-2695219BEC4A}
 	EndGlobalSection
 EndGlobal

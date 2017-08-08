@@ -155,7 +155,7 @@ namespace Fclp
 		/// </exception>
 		public ICommandLineOptionFluent<T> Setup<T>(char shortOption, string longOption)
 		{
-			return SetupInternal<T>(shortOption.ToString(CultureInfo.InvariantCulture), longOption);
+			return SetupInternal<T>(Convert.ToString(shortOption, CultureInfo.InvariantCulture), longOption);
 		}
 
 		/// <summary>
@@ -201,7 +201,7 @@ namespace Fclp
 		/// </exception>
 		public ICommandLineOptionFluent<T> Setup<T>(char shortOption)
 		{
-			return SetupInternal<T>(shortOption.ToString(CultureInfo.InvariantCulture), null);
+			return SetupInternal<T>(Convert.ToString(shortOption, CultureInfo.InvariantCulture), null);
 		}
 
 		/// <summary>

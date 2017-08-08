@@ -226,13 +226,12 @@ namespace FluentCommandLineParser.Tests.Internals
 		}
 		
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Ensure_Cannot_Be_Constructed_With_Null_Parser()
 		{
 			const string expectedShortName = "My short name";
 			const string expectedLongName = "My long name";
 
-			new CommandLineOption<object>(expectedShortName, expectedLongName, null);
+            Assert.Throws<ArgumentNullException>(() => new CommandLineOption<object>(expectedShortName, expectedLongName, null));
 		}
 
 		#endregion Constructor Tests
@@ -272,7 +271,6 @@ namespace FluentCommandLineParser.Tests.Internals
 		#region Bind Tests
 
 		[Test]
-		[ExpectedException(typeof(OptionSyntaxException))]
 		public void Ensure_That_If_Value_Is_Null_Cannot_Be_Parsed_And_No_Default_Set_Then_optionSyntaxException_Is_Thrown()
 		{
 			var option = new ParsedOption();
@@ -282,12 +280,11 @@ namespace FluentCommandLineParser.Tests.Internals
 
 			var target = new CommandLineOption<string>("s", "long name", mockParser.Object);
 
-			target.Bind(option);
+            Assert.Throws<OptionSyntaxException>(() => target.Bind(option));
 		}
 
 
 		[Test]
-		[ExpectedException(typeof(OptionSyntaxException))]
 		public void Ensure_That_If_Value_Is_Empty_Cannot_Be_Parsed_And_No_Default_Set_Then_optionSyntaxException_Is_Thrown()
 		{
 			var option = new ParsedOption();
@@ -297,12 +294,11 @@ namespace FluentCommandLineParser.Tests.Internals
 
 			var target = new CommandLineOption<string>("s", "long name", mockParser.Object);
 
-			target.Bind(option);
+            Assert.Throws<OptionSyntaxException>(() => target.Bind(option));
 		}
 
 
 		[Test]
-		[ExpectedException(typeof(OptionSyntaxException))]
 		public void Ensure_That_If_Value_Is_Whitespace_Cannot_Be_Parsed_And_No_Default_Set_Then_optionSyntaxException_Is_Thrown()
 		{
 			var option = new ParsedOption();
@@ -312,7 +308,7 @@ namespace FluentCommandLineParser.Tests.Internals
 
 			var target = new CommandLineOption<string>("s", "long name", mockParser.Object);
 
-			target.Bind(option);
+            Assert.Throws<OptionSyntaxException>(() => target.Bind(option));
 		}
 		#endregion
 	}

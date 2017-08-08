@@ -27,6 +27,8 @@
 using System;
 using NUnit.Framework;
 using Moq;
+using Fclp.Internals.Errors;
+using Fclp.Internals;
 
 namespace FluentCommandLineParser.Internals.Errors
 {
@@ -42,10 +44,9 @@ namespace FluentCommandLineParser.Internals.Errors
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Ensure_Cannot_Specify_Null_option()
         {
-            new ExpectedOptionNotFoundParseError(null);
+            Assert.Throws< ArgumentNullException>(() => new ExpectedOptionNotFoundParseError(null));
         }
     }
 }

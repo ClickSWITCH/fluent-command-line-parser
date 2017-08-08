@@ -33,6 +33,19 @@ using Ploeh.AutoFixture.AutoMoq;
 
 namespace Fclp.Tests.Internals
 {
+    public static class StringArgumentExtensions
+    {
+        public static string[] ParseArguments(this string args)
+        {
+            return TestContextBase<object>.ParseArguments(args);
+        }
+
+        public static string ReplaceWithDoubleQuotes(this string args)
+        {
+            return TestContextBase<object>.ReplaceWithDoubleQuotes(args);
+        }
+    }
+
 	public abstract class TestContextBase<TSut> where TSut : class
 	{
 		protected static TSut sut;
@@ -62,13 +75,13 @@ namespace Fclp.Tests.Internals
 			return mockObj;
 		}
 
-		protected static string[] ParseArguments(string args)
+		public static string[] ParseArguments(string args)
 		{
 			args = ReplaceWithDoubleQuotes(args);
 			return args.SplitOnWhitespace().ToArray();
 		}
 
-		protected static string ReplaceWithDoubleQuotes(string args)
+		public static string ReplaceWithDoubleQuotes(string args)
 		{
 			if (args == null) return null;
 			return args.Replace('\'', '"');

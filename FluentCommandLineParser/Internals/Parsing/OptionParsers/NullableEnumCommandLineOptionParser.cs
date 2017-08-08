@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.Reflection;
 
 namespace Fclp.Internals.Parsing.OptionParsers
 {
@@ -41,7 +42,7 @@ namespace Fclp.Internals.Parsing.OptionParsers
         public NullableEnumCommandLineOptionParser(ICommandLineOptionParserFactory parserFactory)
         {
             var type = typeof(TEnum);
-            if (!type.IsEnum) throw new ArgumentException(string.Format("T must be an System.Enum but is '{0}'", type));
+            if (!type.GetTypeInfo().IsEnum) throw new ArgumentException(string.Format("T must be an System.Enum but is '{0}'", type));
             _parserFactory = parserFactory;
         }
 

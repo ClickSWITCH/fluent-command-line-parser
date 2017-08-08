@@ -25,242 +25,196 @@
 using System.Linq;
 using Fclp.Internals.Extensions;
 using Fclp.Internals.Parsing;
-using Machine.Specifications;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Fclp.Tests.Internals
 {
-	public class SingleOptionInlineDataAttribute : InlineDataAttribute
-	{
-		public SingleOptionInlineDataAttribute(
-			string arguments,
-			string expectedKeyChar,
-			string expectedKey,
-			string expectedValue) 
-			: base(string.Format(arguments, expectedValue.WrapInDoubleQuotes()), expectedKeyChar, expectedKey, expectedValue)
-		{
-		}
-	}
 
-	public class DoubleOptionInlineDataAttribute : InlineDataAttribute
-	{
-		public DoubleOptionInlineDataAttribute(
-			string arguments,
-			string firstExpectedKeyChar,
-			string firstExpectedKey,
-			string firstExpectedValue,
-			string secondExpectedKeyChar,
-			string secondExpectedKey,
-			string secondExpectedValue)
-			: base(string.Format(arguments, firstExpectedValue.WrapInDoubleQuotes(), secondExpectedValue.WrapInDoubleQuotes()), 
-			firstExpectedKeyChar, 
-			firstExpectedKey, 
-			firstExpectedValue, 
-			secondExpectedKeyChar, 
-			secondExpectedKey, 
-			secondExpectedValue)
-		{
-		}
-	}
+    public class CommandLineParserEngineMark2TestsXUnit
+    {
+        [Theory]
+        [InlineData("-f", "-", "f", null)]
+        [InlineData("/f", "/", "f", null)]
+        [InlineData("--f", "--", "f", null)]
+        [InlineData("-f apple", "-", "f", "apple")]
+        [InlineData("/f apple", "/", "f", "apple")]
+        [InlineData("--f apple", "--", "f", "apple")]
+        [InlineData("/fruit", "/", "fruit", null)]
+        [InlineData("--fruit", "--", "fruit", null)]
+        [InlineData("/fruit apple", "/", "fruit", "apple")]
+        [InlineData("--fruit apple", "--", "fruit", "apple")]
+        [InlineData("/fruit:apple", "/", "fruit", "apple")]
+        [InlineData("--fruit:apple", "--", "fruit", "apple")]
+        [InlineData("-f:apple", "-", "f", "apple")]
+        [InlineData("/fruit=apple", "/", "fruit", "apple")]
+        [InlineData("--fruit=apple", "--", "fruit", "apple")]
+        [InlineData("-f=apple", "-", "f", "apple")]
+        [InlineData("/fruit 'apple pear plum'", "/", "fruit", "'apple pear plum'")]
+        [InlineData("--fruit 'apple pear plum'", "--", "fruit", "'apple pear plum'")]
+        [InlineData("-f 'apple pear plum'", "-", "f", "'apple pear plum'")]
+        [InlineData("/fruit:'apple pear plum'", "/", "fruit", "'apple pear plum'")]
+        [InlineData("--fruit:'apple pear plum'", "--", "fruit", "'apple pear plum'")]
+        [InlineData("-f:'apple pear plum'", "-", "f", "'apple pear plum'")]
+        [InlineData("/fruit='apple pear plum'", "/", "fruit", "'apple pear plum'")]
+        [InlineData("--fruit='apple pear plum'", "--", "fruit", "'apple pear plum'")]
+        [InlineData("-f='apple pear plum'", "-", "f", "'apple pear plum'")]
+        public void should_parse_single_options_correctly(
+            string arguments,
+            string expectedPrefix,
+            string expectedKey,
+            string expectedValue)
+        {
+            var convertedArgs = arguments.ParseArguments();
+            expectedValue = expectedValue.ReplaceWithDoubleQuotes();
 
-	public class CommandLineParserEngineMark2TestsXUnit: TestContextBase<CommandLineParserEngineMark2>
-	{
-		[Theory]
-		[SingleOptionInlineData("-f", "-", "f", null)]
-		[SingleOptionInlineData("/f", "/", "f", null)]
-		[SingleOptionInlineData("--f", "--", "f", null)]
-		[SingleOptionInlineData("-f apple", "-", "f", "apple")]
-		[SingleOptionInlineData("/f apple", "/", "f", "apple")]
-		[SingleOptionInlineData("--f apple", "--", "f", "apple")]
-		[SingleOptionInlineData("-f", "-", "f", null)]
-		[SingleOptionInlineData("/fruit", "/", "fruit", null)]
-		[SingleOptionInlineData("--fruit", "--", "fruit", null)]
-		[SingleOptionInlineData("/fruit apple", "/", "fruit", "apple")]
-		[SingleOptionInlineData("--fruit apple", "--", "fruit", "apple")]
-		[SingleOptionInlineData("-f apple", "-", "f", "apple")]
-		[SingleOptionInlineData("/fruit:apple", "/", "fruit", "apple")]
-		[SingleOptionInlineData("--fruit:apple", "--", "fruit", "apple")]
-		[SingleOptionInlineData("-f:apple", "-", "f", "apple")]
-		[SingleOptionInlineData("/fruit=apple", "/", "fruit", "apple")]
-		[SingleOptionInlineData("--fruit=apple", "--", "fruit", "apple")]
-		[SingleOptionInlineData("-f=apple", "-", "f", "apple")]
-		[SingleOptionInlineData("/fruit 'apple pear plum'", "/", "fruit", "'apple pear plum'")]
-		[SingleOptionInlineData("--fruit 'apple pear plum'", "--", "fruit", "'apple pear plum'")]
-		[SingleOptionInlineData("-f 'apple pear plum'", "-", "f", "'apple pear plum'")]
-		[SingleOptionInlineData("/fruit:'apple pear plum'", "/", "fruit", "'apple pear plum'")]
-		[SingleOptionInlineData("--fruit:'apple pear plum'", "--", "fruit", "'apple pear plum'")]
-		[SingleOptionInlineData("-f:'apple pear plum'", "-", "f", "'apple pear plum'")]
-		[SingleOptionInlineData("/fruit='apple pear plum'", "/", "fruit", "'apple pear plum'")]
-		[SingleOptionInlineData("--fruit='apple pear plum'", "--", "fruit", "'apple pear plum'")]
-		[SingleOptionInlineData("-f='apple pear plum'", "-", "f", "'apple pear plum'")]
-		public void should_parse_single_options_correctly(
-			string arguments,
-			string expectedPrefix,
-			string expectedKey,
-			string expectedValue)
-		{
-			var convertedArgs = ParseArguments(arguments);
-			expectedValue = ReplaceWithDoubleQuotes(expectedValue);
+            var sut = new CommandLineParserEngineMark2();
+            var result = sut.Parse(convertedArgs);
 
-			InitialiseFixture();
-			CreateSut();
+            Assert.Single(result.ParsedOptions);
+            Assert.Empty(result.AdditionalValues);
 
-			var result = sut.Parse(convertedArgs);
+            var actualParsedOption = result.ParsedOptions.First();
 
-			result.ParsedOptions.Count().ShouldEqual(1);
-			result.AdditionalValues.ShouldBeEmpty();
+            Assert.Equal(expectedKey, actualParsedOption.Key);
+            Assert.Equal(expectedValue, actualParsedOption.Value);
+            Assert.Equal(expectedPrefix, actualParsedOption.Prefix);
+        }
 
-			var actualParsedOption = result.ParsedOptions.First();
+        [Theory]
+        [InlineData("-f -v", "-", "f", null, "-", "v", null)]
+        [InlineData("/f /v", "/", "f", null, "/", "v", null)]
+        [InlineData("--f --v", "--", "f", null, "--", "v", null)]
+        [InlineData("-f apple -v onion", "-", "f", "apple", "-", "v", "onion")]
+        [InlineData("/f apple /v onion", "/", "f", "apple", "/", "v", "onion")]
+        [InlineData("--f apple --v onion", "--", "f", "apple", "--", "v", "onion")]
+        [InlineData("/fruit /vegetable", "/", "fruit", null, "/", "vegetable", null)]
+        [InlineData("--fruit --vegetable", "--", "fruit", null, "--", "vegetable", null)]
+        [InlineData("/fruit apple /vegetable onion", "/", "fruit", "apple", "/", "vegetable", "onion")]
+        [InlineData("--fruit apple --vegetable onion", "--", "fruit", "apple", "--", "vegetable", "onion")]
+        [InlineData("/fruit:apple /vegetable:onion", "/", "fruit", "apple", "/", "vegetable", "onion")]
+        [InlineData("--fruit:apple --vegetable:onion", "--", "fruit", "apple", "--", "vegetable", "onion")]
+        [InlineData("-f:apple -v: onion", "-", "f", "apple", "-", "v", "onion")]
+        [InlineData("/fruit=apple /vegetable=onion", "/", "fruit", "apple", "/", "vegetable", "onion")]
+        [InlineData("--fruit=apple --vegetable=onion", "--", "fruit", "apple", "--", "vegetable", "onion")]
+        [InlineData("-f=apple -v=onion", "-", "f", "apple", "-", "v", "onion")]
+        [InlineData("/fruit 'apple pear plum' /vegetable 'onion carrot peas'", "/", "fruit", "'apple pear plum'", "/", "vegetable", "'onion carrot peas'")]
+        [InlineData("--fruit 'apple pear plum' --vegetable 'onion carrot peas'", "--", "fruit", "'apple pear plum'", "--", "vegetable", "'onion carrot peas'")]
+        [InlineData("-f 'apple pear plum' -v 'onion carrot peas'", "-", "f", "'apple pear plum'", "-", "v", "'onion carrot peas'")]
+        [InlineData("/fruit:'apple pear plum' /vegetable:'onion carrot peas'", "/", "fruit", "'apple pear plum'", "/", "vegetable", "'onion carrot peas'")]
+        [InlineData("--fruit:'apple pear plum' --vegetable:'onion carrot peas'", "--", "fruit", "'apple pear plum'", "--", "vegetable", "'onion carrot peas'")]
+        [InlineData("-f:'apple pear plum' -v:'onion carrot peas'", "-", "f", "'apple pear plum'", "-", "v", "'onion carrot peas'")]
+        [InlineData("/fruit='apple pear plum' /vegetable='onion carrot peas'", "/", "fruit", "'apple pear plum'", "/", "vegetable", "'onion carrot peas'")]
+        [InlineData("--fruit='apple pear plum' --vegetable='onion carrot peas'", "--", "fruit", "'apple pear plum'", "--", "vegetable", "'onion carrot peas'")]
+        [InlineData("-f='apple pear plum' -v='onion carrot peas'", "-", "f", "'apple pear plum'", "-", "v", "'onion carrot peas'")]
+        public void should_parse_double_options_correctly(
+            string arguments,
+            string firstExpectedKeyChar,
+            string firstExpectedKey,
+            string firstExpectedValue,
+            string secondExpectedKeyChar,
+            string secondExpectedKey,
+            string secondExpectedValue)
+        {
+            var convertedArgs = arguments.ParseArguments();
 
-			actualParsedOption.Key.ShouldEqual(expectedKey);
-			actualParsedOption.Value.ShouldEqual(expectedValue);
-			actualParsedOption.Prefix.ShouldEqual(expectedPrefix);
-		}
+            firstExpectedValue = firstExpectedValue.ReplaceWithDoubleQuotes();
+            secondExpectedValue = secondExpectedValue.ReplaceWithDoubleQuotes();
 
-		[Theory]
-		[DoubleOptionInlineData("-f -v", "-", "f", null, "-", "v", null)]
-		[DoubleOptionInlineData("/f /v", "/", "f", null, "/", "v", null)]
-		[DoubleOptionInlineData("--f --v", "--", "f", null, "--", "v", null)]
-		[DoubleOptionInlineData("-f apple -v onion", "-", "f", "apple", "-", "v", "onion")]
-		[DoubleOptionInlineData("/f apple /v onion", "/", "f", "apple", "/", "v", "onion")]
-		[DoubleOptionInlineData("--f apple --v onion", "--", "f", "apple", "--", "v", "onion")]
-		[DoubleOptionInlineData("-f -v", "-", "f", null, "-", "v", null)]
-		[DoubleOptionInlineData("/fruit /vegetable", "/", "fruit", null, "/", "vegetable", null)]
-		[DoubleOptionInlineData("--fruit --vegetable", "--", "fruit", null, "--", "vegetable", null)]
-		[DoubleOptionInlineData("/fruit apple /vegetable onion", "/", "fruit", "apple", "/", "vegetable", "onion")]
-		[DoubleOptionInlineData("--fruit apple --vegetable onion", "--", "fruit", "apple", "--", "vegetable", "onion")]
-		[DoubleOptionInlineData("-f apple -v onion", "-", "f", "apple", "-", "v", "onion")]
-		[DoubleOptionInlineData("/fruit:apple /vegetable:onion", "/", "fruit", "apple", "/", "vegetable", "onion")]
-		[DoubleOptionInlineData("--fruit:apple --vegetable:onion", "--", "fruit", "apple", "--", "vegetable", "onion")]
-		[DoubleOptionInlineData("-f:apple -v: onion", "-", "f", "apple", "-", "v", "onion")]
-		[DoubleOptionInlineData("/fruit=apple /vegetable=onion", "/", "fruit", "apple", "/", "vegetable", "onion")]
-		[DoubleOptionInlineData("--fruit=apple --vegetable=onion", "--", "fruit", "apple", "--", "vegetable", "onion")]
-		[DoubleOptionInlineData("-f=apple -v=onion", "-", "f", "apple", "-", "v", "onion")]
-		[DoubleOptionInlineData("/fruit 'apple pear plum' /vegetable 'onion carrot peas'", "/", "fruit", "'apple pear plum'", "/", "vegetable", "'onion carrot peas'")]
-		[DoubleOptionInlineData("--fruit 'apple pear plum' --vegetable 'onion carrot peas'", "--", "fruit", "'apple pear plum'", "--", "vegetable", "'onion carrot peas'")]
-		[DoubleOptionInlineData("-f 'apple pear plum' -v 'onion carrot peas'", "-", "f", "'apple pear plum'", "-", "v", "'onion carrot peas'")]
-		[DoubleOptionInlineData("/fruit:'apple pear plum' /vegetable:'onion carrot peas'", "/", "fruit", "'apple pear plum'", "/", "vegetable", "'onion carrot peas'")]
-		[DoubleOptionInlineData("--fruit:'apple pear plum' --vegetable:'onion carrot peas'", "--", "fruit", "'apple pear plum'", "--", "vegetable", "'onion carrot peas'")]
-		[DoubleOptionInlineData("-f:'apple pear plum' -v:'onion carrot peas'", "-", "f", "'apple pear plum'", "-", "v", "'onion carrot peas'")]
-		[DoubleOptionInlineData("/fruit='apple pear plum' /vegetable='onion carrot peas'", "/", "fruit", "'apple pear plum'", "/", "vegetable", "'onion carrot peas'")]
-		[DoubleOptionInlineData("--fruit='apple pear plum' --vegetable='onion carrot peas'", "--", "fruit", "'apple pear plum'", "--", "vegetable", "'onion carrot peas'")]
-		[DoubleOptionInlineData("-f='apple pear plum' -v='onion carrot peas'", "-", "f", "'apple pear plum'", "-", "v", "'onion carrot peas'")]
-		public void should_parse_double_options_correctly(
-			string arguments,
-			string firstExpectedKeyChar,
-			string firstExpectedKey,
-			string firstExpectedValue,
-			string secondExpectedKeyChar,
-			string secondExpectedKey,
-			string secondExpectedValue)
-		{
-			var convertedArgs = ParseArguments(arguments);
+            var sut = new CommandLineParserEngineMark2();
+            var result = sut.Parse(convertedArgs);
 
-			firstExpectedValue = ReplaceWithDoubleQuotes(firstExpectedValue);
-			secondExpectedValue = ReplaceWithDoubleQuotes(secondExpectedValue);
+            Assert.Equal(2, result.ParsedOptions.Count());
+            Assert.Empty(result.AdditionalValues);
 
-			InitialiseFixture();
-			CreateSut();
+            var first = result.ParsedOptions.First();
 
-			var result = sut.Parse(convertedArgs);
+            Assert.Equal(firstExpectedKey, first.Key);
+            Assert.Equal(firstExpectedValue, first.Value);
+            Assert.Equal(firstExpectedKeyChar, first.Prefix);
 
-			result.ParsedOptions.Count().ShouldEqual(2);
-			result.AdditionalValues.ShouldBeEmpty();
+            var second = result.ParsedOptions.ElementAt(1);
 
-			var first = result.ParsedOptions.First();
+            Assert.Equal(secondExpectedKey, second.Key);
+            Assert.Equal(secondExpectedValue, second.Value);
+            Assert.Equal(secondExpectedKeyChar, second.Prefix);
+        }
 
-			first.Key.ShouldEqual(firstExpectedKey);
-			first.Value.ShouldEqual(firstExpectedValue);
-			first.Prefix.ShouldEqual(firstExpectedKeyChar);
+        [Theory]
+        [InlineData("-b", "-", "b", null, null)]
+        [InlineData("-b+", "-", "b", null, "+")]
+        [InlineData("-b-", "-", "b", null, "-")]
+        [InlineData("/b", "/", "b", null, null)]
+        [InlineData("/b+", "/", "b", null, "+")]
+        [InlineData("/b-", "/", "b", null, "-")]
+        [InlineData("--b", "--", "b", null, null)]
+        [InlineData("--b+", "--", "b", null, "+")]
+        [InlineData("--b-", "--", "b", null, "-")]
+        public void should_parse_boolean_values_correctly(
+            string arguments,
+            string expectedPrefix,
+            string expectedKey,
+            string expectedValue,
+            string expectedSuffix)
+        {
+            var convertedArgs = arguments.ParseArguments();
 
-			var second = result.ParsedOptions.ElementAt(1);
+            var sut = new CommandLineParserEngineMark2();
+            var result = sut.Parse(convertedArgs);
 
-			second.Key.ShouldEqual(secondExpectedKey);
-			second.Value.ShouldEqual(secondExpectedValue);
-			second.Prefix.ShouldEqual(secondExpectedKeyChar);
-		}
+            Assert.Single(result.ParsedOptions);
+            Assert.Empty(result.AdditionalValues);
 
-		[Theory]
-		[InlineData("-b", "-", "b", null, null)]
-		[InlineData("-b+", "-", "b", null, "+")]
-		[InlineData("-b-", "-", "b", null, "-")]
-		[InlineData("/b", "/", "b", null, null)]
-		[InlineData("/b+", "/", "b", null, "+")]
-		[InlineData("/b-", "/", "b", null, "-")]
-		[InlineData("--b", "--", "b", null, null)]
-		[InlineData("--b+", "--", "b", null, "+")]
-		[InlineData("--b-", "--", "b", null, "-")]
-		public void should_parse_boolean_values_correctly(
-			string arguments,
-			string expectedPrefix,
-			string expectedKey,
-			string expectedValue,
-			string expectedSuffix)
-		{
-			var convertedArgs = ParseArguments(arguments);
+            var actualParsedOption = result.ParsedOptions.First();
 
-			InitialiseFixture();
-			CreateSut();
+            Assert.Equal(expectedKey, actualParsedOption.Key);
+            Assert.Equal(expectedValue, actualParsedOption.Value);
+            Assert.Equal(expectedPrefix, actualParsedOption.Prefix);
+            Assert.Equal(expectedSuffix, actualParsedOption.Suffix);
+        }
 
-			var result = sut.Parse(convertedArgs);
+        [Theory]
+        [InlineData("-xyz", "-", null, null, "x", "y", "z")]
+        [InlineData("-xyz+", "-", "+", null, "x", "y", "z")]
+        [InlineData("-xyz-", "-", "-", null, "x", "y", "z")]
+        public void should_parse_combined_boolean_values_correctly(
+            string arguments,
+            string expectedPrefix,
+            string expectedSuffix,
+            string expectedValue,
+            string firstExpectedKey,
+            string secondExpectedKey,
+            string thirdExpectedKey)
+        {
+            var convertedArgs = arguments.ParseArguments();
 
-			result.ParsedOptions.Count().ShouldEqual(1);
-			result.AdditionalValues.ShouldBeEmpty();
+            expectedValue = expectedValue.ReplaceWithDoubleQuotes();
 
-			var actualParsedOption = result.ParsedOptions.First();
+            var sut = new CommandLineParserEngineMark2();
+            var result = sut.Parse(convertedArgs);
 
-			actualParsedOption.Key.ShouldEqual(expectedKey);
-			actualParsedOption.Value.ShouldEqual(expectedValue);
-			actualParsedOption.Prefix.ShouldEqual(expectedPrefix);
-			actualParsedOption.Suffix.ShouldEqual(expectedSuffix);
-		}
+            Assert.Equal(3, result.ParsedOptions.Count());
+            Assert.Empty(result.AdditionalValues);
 
-		[Theory]
-		[InlineData("-xyz", "-", null, null, "x", "y", "z")]
-		[InlineData("-xyz+", "-", "+", null, "x", "y", "z")]
-		[InlineData("-xyz-", "-", "-", null, "x", "y", "z")]
-		public void should_parse_combined_boolean_values_correctly(
-			string arguments,
-			string expectedPrefix,
-			string expectedSuffix,
-			string expectedValue,
-			string firstExpectedKey,
-			string secondExpectedKey,
-			string thirdExpectedKey)
-		{
-			var convertedArgs = ParseArguments(arguments);
+            var first = result.ParsedOptions.First();
 
-			expectedValue = ReplaceWithDoubleQuotes(expectedValue);
+            Assert.Equal(firstExpectedKey, first.Key);
+            Assert.Equal(expectedValue, first.Value);
+            Assert.Equal(expectedPrefix, first.Prefix);
+            Assert.Equal(expectedSuffix, first.Suffix);
 
-			InitialiseFixture();
-			CreateSut();
+            var second = result.ParsedOptions.ElementAt(1);
 
-			var result = sut.Parse(convertedArgs);
+            Assert.Equal(secondExpectedKey, second.Key);
+            Assert.Equal(expectedValue, second.Value);
+            Assert.Equal(expectedPrefix, second.Prefix);
+            Assert.Equal(expectedSuffix, second.Suffix);
 
-			result.ParsedOptions.Count().ShouldEqual(3);
-			result.AdditionalValues.ShouldBeEmpty();
+            var third = result.ParsedOptions.ElementAt(2);
 
-			var first = result.ParsedOptions.First();
-
-			first.Key.ShouldEqual(firstExpectedKey);
-			first.Value.ShouldEqual(expectedValue);
-			first.Prefix.ShouldEqual(expectedPrefix);
-			first.Suffix.ShouldEqual(expectedSuffix);
-
-			var second = result.ParsedOptions.ElementAt(1);
-
-			second.Key.ShouldEqual(secondExpectedKey);
-			second.Value.ShouldEqual(expectedValue);
-			second.Prefix.ShouldEqual(expectedPrefix);
-			second.Suffix.ShouldEqual(expectedSuffix);
-
-			var third = result.ParsedOptions.ElementAt(2);
-
-			third.Key.ShouldEqual(thirdExpectedKey);
-			third.Value.ShouldEqual(expectedValue);
-			third.Prefix.ShouldEqual(expectedPrefix);
-			third.Suffix.ShouldEqual(expectedSuffix);
-		}
-	}
+            Assert.Equal(thirdExpectedKey, third.Key);
+            Assert.Equal(expectedValue, third.Value);
+            Assert.Equal(expectedPrefix, third.Prefix);
+            Assert.Equal(expectedSuffix, third.Suffix);
+        }
+    }
 }

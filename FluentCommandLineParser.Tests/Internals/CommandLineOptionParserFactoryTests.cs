@@ -41,11 +41,10 @@ namespace FluentCommandLineParser.Tests.Internals
 		}
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Ensure_Cannot_Add_Null_Parser()
 		{
 			var factory = new CommandLineOptionParserFactory();
-			factory.AddOrReplace<string>(null);
+            Assert.Throws<ArgumentNullException>(() => factory.AddOrReplace<string>(null));
 		}
 
 		[Test]
@@ -81,12 +80,11 @@ namespace FluentCommandLineParser.Tests.Internals
 		}
 
 		[Test]
-		[ExpectedException(typeof(UnsupportedTypeException))]
 		public void Ensure_UnsupportedTypeException_Thrown_If_Factory_Is_Unable_To_Create_Requested_Type()
 		{
 			var factory = new CommandLineOptionParserFactory();
 
-			factory.CreateParser<CommandLineOptionParserFactoryTests>();
+            Assert.Throws<UnsupportedTypeException>(() => factory.CreateParser<CommandLineOptionParserFactoryTests>());
 		}
 
 		[Test]

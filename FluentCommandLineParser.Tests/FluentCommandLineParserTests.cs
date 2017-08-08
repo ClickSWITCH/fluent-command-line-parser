@@ -1048,11 +1048,10 @@ namespace Fclp.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOptionNameException))]
         public void Cannot_have_single_character_long_option()
         {
             var parser = CreateFluentParser();
-            parser.Setup<string>("s");
+            Assert.Throws<InvalidOptionNameException>(() => parser.Setup<string>("s"));
         }
 
         #endregion
@@ -1124,36 +1123,33 @@ namespace Fclp.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(OptionAlreadyExistsException))]
         public void Ensure_Expected_Exception_Thrown_If_Adding_A_Option_With_A_ShortName_Which_Has_Already_Been_Setup()
         {
             var parser = CreateFluentParser();
 
             parser.Setup<string>('s', "string");
 
-            parser.Setup<int>('s', "int32");
+            Assert.Throws<OptionAlreadyExistsException>(() => parser.Setup<int>('s', "int32"));
         }
 
         [Test]
-        [ExpectedException(typeof(OptionAlreadyExistsException))]
         public void Ensure_Expected_Exception_Thrown_If_Adding_A_Option_With_A_ShortName_And_LongName_Which_Has_Already_Been_Setup()
         {
             var parser = CreateFluentParser();
 
             parser.Setup<string>('s', "string");
 
-            parser.Setup<int>('s', "string");
+            Assert.Throws<OptionAlreadyExistsException>(() => parser.Setup<int>('s', "string"));
         }
 
         [Test]
-        [ExpectedException(typeof(OptionAlreadyExistsException))]
         public void Ensure_Expected_Exception_Thrown_If_Adding_A_Option_With_A_LongName_Which_Has_Already_Been_Setup()
         {
             var parser = CreateFluentParser();
 
             parser.Setup<string>('s', "string");
 
-            parser.Setup<int>('i', "string");
+            Assert.Throws<OptionAlreadyExistsException>(() => parser.Setup<int>('i', "string"));
         }
 
         #endregion
@@ -1395,7 +1391,7 @@ namespace Fclp.Tests
             var result = parser.Parse(args);
 
             Assert.IsTrue(result.HelpCalled);
-            Assert.IsNotNullOrEmpty(callbackResult);
+            Assert.That(callbackResult, Is.Not.Null.And.Not.Empty);
         }
 
         [Test]
@@ -1409,7 +1405,7 @@ namespace Fclp.Tests
 
             parser.HelpOption.ShowHelp(parser.Options);
 
-            Assert.IsNotNullOrEmpty(callbackResult);           
+            Assert.That(callbackResult, Is.Not.Null.And.Not.Empty);           
         }
 
         [Test]
@@ -1422,8 +1418,7 @@ namespace Fclp.Tests
             parser.SetupHelp("?").Callback(s => callbackResult = s);
 
             parser.HelpOption.ShowHelp(parser.Options);
-
-            Assert.IsNotNullOrEmpty(callbackResult);           
+            Assert.That(callbackResult, Is.Not.Null.And.Not.Empty);       
         }
 
         #endregion
@@ -1549,35 +1544,31 @@ namespace Fclp.Tests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOptionNameException))]
         public void Ensure_Obsolete_Setup_Does_Not_Allow_Null_Short_And_Long_Options()
         {
             var parser = CreateFluentParser();
-            parser.Setup<string>(null, null);
+            Assert.Throws<InvalidOptionNameException>(() => parser.Setup<string>(null, null));
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOptionNameException))]
         public void Ensure_Obsolete_Setup_Does_Not_Allow_Empty_Short_And_Long_Options()
         {
             var parser = CreateFluentParser();
-            parser.Setup<string>(string.Empty, string.Empty);
+            Assert.Throws<InvalidOptionNameException>(() => parser.Setup<string>(string.Empty, string.Empty));
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOptionNameException))]
         public void Ensure_Obsolete_Setup_Does_Not_Allow_Short_Option_With_More_Than_One_Char()
         {
             var parser = CreateFluentParser();
-            parser.Setup<string>("ab", null);
+            Assert.Throws<InvalidOptionNameException>(() => parser.Setup<string>("ab", null));
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOptionNameException))]
         public void Ensure_Obsolete_Setup_Does_Not_Allow_Long_Option_With_One_Char()
         {
             var parser = CreateFluentParser();
-            parser.Setup<string>(null, "s");
+            Assert.Throws<InvalidOptionNameException>(() => parser.Setup<string>(null, "s"));
         }
 
         #endregion

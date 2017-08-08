@@ -24,148 +24,179 @@
 
 using Fclp.Tests.FluentCommandLineParser;
 using Fclp.Tests.Internals;
-using Machine.Specifications;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Fclp.Tests.Integration
 {
-	public class IntegrationTests : TestContextBase<Fclp.FluentCommandLineParser>
-	{
-		[Theory]
-		[BoolInlineData("-b", true)]
-		[BoolInlineData("-b+", true)]
-		[BoolInlineData("-b-", false)]
-		[BoolInlineData("/b:true", true)]
-		[BoolInlineData("/b:false", false)]
-		[BoolInlineData("-b true", true)]
-		[BoolInlineData("-b false", false)]
-		[BoolInlineData("-b=true", true)]
-		[BoolInlineData("-b=false", false)]
-        [BoolInlineData("-b on", true)]
-        [BoolInlineData("-b off", false)]
-        [BoolInlineData("-b ON", true)]
-        [BoolInlineData("-b OFF", false)]
-		[BoolInlineData("-b:on", true)]
-		[BoolInlineData("-b:off", false)]
-		[BoolInlineData("-b=on", true)]
-		[BoolInlineData("-b=off", false)]
-		[StringInlineData("-s {0}", "Hello World")]
-		[StringInlineData("-s:{0}", "Hello World")]
-		[StringInlineData("-s={0}", "Hello World")]
-		[Int32InlineData("-i 123", 123)]
-		[Int32InlineData("-i:123", 123)]
-		[Int32InlineData("-i=123", 123)]
-        [Int64InlineData("-l 2147483649", 2147483649)]
-        [Int64InlineData("-l:2147483649", 2147483649)]
-        [Int64InlineData("-l=2147483649", 2147483649)]
-		[DoubleInlineData("-d 123.456", 123.456)]
-		[DoubleInlineData("-d:123.456", 123.456)]
-		[DoubleInlineData("-d=123.456", 123.456)]
-		[Int32EnumInlineData("-e 1", TestEnum.Value1)]
-		[Int32EnumInlineData("-e:1", TestEnum.Value1)]
-		[Int32EnumInlineData("-e=1", TestEnum.Value1)]
-		[EnumInlineData("-e Value1", TestEnum.Value1)]
-		[EnumInlineData("-e:Value1", TestEnum.Value1)]
-		[EnumInlineData("-e=Value1", TestEnum.Value1)]
-		public void SimpleShortOptionsAreParsedCorrectly(
-			string arguments,
-			bool? expectedBoolean,
-			string expectedString,
-			int? expectedInt32,
-            long? expectedInt64,
-			double? expectedDouble,
-			TestEnum? expectedEnum)
-		{
-			sut = new Fclp.FluentCommandLineParser();
+    public class IntegrationTests
+    {
+        [Theory]
+        [InlineData("-b", true)]
+        [InlineData("-b+", true)]
+        [InlineData("-b-", false)]
+        [InlineData("/b:true", true)]
+        [InlineData("/b:false", false)]
+        [InlineData("-b true", true)]
+        [InlineData("-b false", false)]
+        [InlineData("-b=true", true)]
+        [InlineData("-b=false", false)]
+        [InlineData("-b on", true)]
+        [InlineData("-b off", false)]
+        [InlineData("-b ON", true)]
+        [InlineData("-b OFF", false)]
+        [InlineData("-b:on", true)]
+        [InlineData("-b:off", false)]
+        [InlineData("-b=on", true)]
+        [InlineData("-b=off", false)]
+        public void SimpleShortOptionsAreParsedCorrectlyBool(string arguments, bool expectedBoolean)
+        {
+            var sut = new Fclp.FluentCommandLineParser();
+            bool? actualBoolean = null;
+            sut.Setup<bool>('b').Callback(b => actualBoolean = b);
+            var args = arguments.ParseArguments();
+            var results = sut.Parse(args);
+            Assert.False(results.HasErrors);
+            Assert.Equal(actualBoolean, expectedBoolean);
+        }
 
-			bool? actualBoolean = null;
-			string actualString = null;
-			int? actualInt32 = null;
+        [Theory]
+        [InlineData("-s {0}", "Hello World")]
+        [InlineData("-s:{0}", "Hello World")]
+        [InlineData("-s={0}", "Hello World")]
+        public void SimpleShortOptionsAreParsedCorrectlyString(string arguments, string expectedString)
+        {
+            var sut = new Fclp.FluentCommandLineParser();
+            string actualString = null;
+            sut.Setup<string>('s').Callback(s => actualString = s);
+            var args = string.Format(arguments, "\"" + expectedString + "\"").ParseArguments();
+            var results = sut.Parse(args);
+            Assert.False(results.HasErrors);
+            Assert.Equal(actualString, expectedString);
+        }
+
+        [Theory]
+        [InlineData("-i 123", 123)]
+        [InlineData("-i:123", 123)]
+        [InlineData("-i=123", 123)]
+        public void SimpleShortOptionsAreParsedCorrectlyInt(string arguments, int expectedInt32)
+        {
+            var sut = new Fclp.FluentCommandLineParser();
+            int? actualInt32 = null;
+            sut.Setup<int>('i').Callback(i => actualInt32 = i);
+            var args = arguments.ParseArguments();
+            var results = sut.Parse(args);
+            Assert.False(results.HasErrors);
+            Assert.Equal(actualInt32, expectedInt32);
+        }
+
+
+        [Theory]
+        [InlineData("-l 2147483649", 2147483649)]
+        [InlineData("-l:2147483649", 2147483649)]
+        [InlineData("-l=2147483649", 2147483649)]
+        public void SimpleShortOptionsAreParsedCorrectlyLong(string arguments, long expectedInt64)
+        {
+            var sut = new Fclp.FluentCommandLineParser();
             long? actualInt64 = null;
-			double? actualDouble = null;
-			TestEnum? actualEnum = null;
-
-			sut.Setup<bool>('b').Callback(b => actualBoolean = b);
-			sut.Setup<string>('s').Callback(s => actualString = s);
-			sut.Setup<int>('i').Callback(i => actualInt32 = i);
             sut.Setup<long>('l').Callback(l => actualInt64 = l);
-			sut.Setup<double>('d').Callback(d => actualDouble = d);
-			sut.Setup<TestEnum>('e').Callback(d => actualEnum = d);
+            var args = arguments.ParseArguments();
+            var results = sut.Parse(args);
+            Assert.False(results.HasErrors);
+            Assert.Equal(actualInt64, expectedInt64);
+        }
 
-			var args = ParseArguments(arguments);
+        [Theory]
+        [InlineData("-d 123.456", 123.456)]
+        [InlineData("-d:123.456", 123.456)]
+        [InlineData("-d=123.456", 123.456)]
+        public void SimpleShortOptionsAreParsedCorrectlyDouble(string arguments, double expectedDouble)
+        {
+            var sut = new Fclp.FluentCommandLineParser();
+            double? actualDouble = null;
+            sut.Setup<double>('d').Callback(d => actualDouble = d);
+            var args = arguments.ParseArguments();
+            var results = sut.Parse(args);
+            Assert.False(results.HasErrors);
+            Assert.Equal(actualDouble, expectedDouble);
+        }
 
-			var results = sut.Parse(args);
+        [Theory]
+        [InlineData("-e 1", TestEnum.Value1)]
+        [InlineData("-e:1", TestEnum.Value1)]
+        [InlineData("-e=1", TestEnum.Value1)]
+        [InlineData("-e Value1", TestEnum.Value1)]
+        [InlineData("-e:Value1", TestEnum.Value1)]
+        [InlineData("-e=Value1", TestEnum.Value1)]
+        public void SimpleShortOptionsAreParsedCorrectlyEnum(string arguments, TestEnum expectedEnum)
+        {
+            var sut = new Fclp.FluentCommandLineParser();
+            TestEnum? actualEnum = null;
+            sut.Setup<TestEnum>('e').Callback(d => actualEnum = d);
+            var args = arguments.ParseArguments();
+            var results = sut.Parse(args);
+            Assert.False(results.HasErrors);
+            Assert.Equal(actualEnum, expectedEnum);
+        }
 
-			results.HasErrors.ShouldBeFalse();
 
-			actualBoolean.ShouldEqual(expectedBoolean);
-			actualString.ShouldEqual(expectedString);
-			actualInt32.ShouldEqual(expectedInt32);
-            actualInt64.ShouldEqual(expectedInt64);
-			actualDouble.ShouldEqual(expectedDouble);
-			actualEnum.ShouldEqual(expectedEnum);
-		}
+        [Theory]
+        [InlineData("-xyz", true)]
+        [InlineData("-xyz+", true)]
+        [InlineData("-xyz-", false)]
+        public void combined_bool_short_options_should_be_parsed_correctly(string arguments, bool expectedValue)
+        {
+            var sut = new Fclp.FluentCommandLineParser();
 
-		[Theory]
-		[InlineData("-xyz", true)]
-		[InlineData("-xyz+", true)]
-		[InlineData("-xyz-", false)]
-		public void combined_bool_short_options_should_be_parsed_correctly(string arguments,bool expectedValue)
-		{
-			sut = new Fclp.FluentCommandLineParser();
+            bool? actualXValue = null;
+            bool? actualYValue = null;
+            bool? actualZValue = null;
 
-			bool? actualXValue = null;
-			bool? actualYValue = null;
-			bool? actualZValue = null;
+            sut.Setup<bool>('x').Callback(x => actualXValue = x);
+            sut.Setup<bool>('y').Callback(y => actualYValue = y);
+            sut.Setup<bool>('z').Callback(z => actualZValue = z);
 
-			sut.Setup<bool>('x').Callback(x => actualXValue = x);
-			sut.Setup<bool>('y').Callback(y => actualYValue = y);
-			sut.Setup<bool>('z').Callback(z => actualZValue = z);
+            var args = arguments.ParseArguments();
 
-			var args = ParseArguments(arguments);
+            var results = sut.Parse(args);
 
-			var results = sut.Parse(args);
+            Assert.False(results.HasErrors);
 
-			results.HasErrors.ShouldBeFalse();
+            Assert.True(actualXValue.HasValue);
+            Assert.True(actualYValue.HasValue);
+            Assert.True(actualZValue.HasValue);
 
-			actualXValue.HasValue.ShouldBeTrue();
-			actualYValue.HasValue.ShouldBeTrue();
-			actualZValue.HasValue.ShouldBeTrue();
+            Assert.Equal(actualXValue.Value, expectedValue);
+            Assert.Equal(actualYValue.Value, expectedValue);
+            Assert.Equal(actualZValue.Value, expectedValue);
+        }
 
-			actualXValue.Value.ShouldEqual(expectedValue);
-			actualYValue.Value.ShouldEqual(expectedValue);
-			actualZValue.Value.ShouldEqual(expectedValue);
-		}
+        [Theory]
+        [InlineData("-xyz 'apply this to x, y and z'", "apply this to x, y and z")]
+        [InlineData("-xyz salmon", "salmon")]
+        [InlineData("-xyz 'salmon'", "salmon")]
+        public void combined_short_options_should_have_the_same_value(string arguments, string expectedValue)
+        {
+            arguments = arguments.ReplaceWithDoubleQuotes();
+            expectedValue = expectedValue.ReplaceWithDoubleQuotes();
 
-		[Theory]
-		[InlineData("-xyz 'apply this to x, y and z'", "apply this to x, y and z")]
-		[InlineData("-xyz salmon", "salmon")]
-		[InlineData("-xyz 'salmon'", "salmon")]
-		public void combined_short_options_should_have_the_same_value(string arguments, string expectedValue)
-		{
-			arguments = ReplaceWithDoubleQuotes(arguments);
-			expectedValue = ReplaceWithDoubleQuotes(expectedValue);
+            var sut = new Fclp.FluentCommandLineParser();
 
-			sut = new Fclp.FluentCommandLineParser();
+            string actualXValue = null;
+            string actualYValue = null;
+            string actualZValue = null;
 
-			string actualXValue = null;
-			string actualYValue = null;
-			string actualZValue = null;
+            sut.Setup<string>('x').Callback(x => actualXValue = x);
+            sut.Setup<string>('y').Callback(y => actualYValue = y);
+            sut.Setup<string>('z').Callback(z => actualZValue = z);
 
-			sut.Setup<string>('x').Callback(x => actualXValue = x);
-			sut.Setup<string>('y').Callback(y => actualYValue = y);
-			sut.Setup<string>('z').Callback(z => actualZValue = z);
+            var args = arguments.ParseArguments();
 
-			var args = ParseArguments(arguments);
+            var results = sut.Parse(args);
 
-			var results = sut.Parse(args);
-
-			results.HasErrors.ShouldBeFalse();
-
-			actualXValue.ShouldEqual(expectedValue);
-			actualYValue.ShouldEqual(expectedValue);
-			actualZValue.ShouldEqual(expectedValue);
-		}
-	}
+            Assert.False(results.HasErrors);
+            Assert.Equal(actualXValue, expectedValue);
+            Assert.Equal(actualYValue, expectedValue);
+            Assert.Equal(actualZValue, expectedValue);
+        }
+    }
 }

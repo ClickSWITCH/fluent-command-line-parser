@@ -28,6 +28,7 @@ using System.Linq;
 using Fclp.Internals.Extensions;
 using Fclp.Internals.Parsing;
 using Fclp.Internals.Parsing.OptionParsers;
+using System.Reflection;
 
 namespace Fclp.Internals
 {
@@ -105,7 +106,9 @@ namespace Fclp.Internals
 			get
 			{
 				var type = typeof (T);
-				var genericArgs = type.GetGenericArguments();
+				var genericArgs = type.GetTypeInfo().IsGenericTypeDefinition
+                    ? type.GetTypeInfo().GenericTypeParameters
+                    : type.GetTypeInfo().GenericTypeArguments;
 				return genericArgs.Any() ? genericArgs.First() : type;
 			}
 		}

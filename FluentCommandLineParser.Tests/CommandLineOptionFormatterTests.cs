@@ -102,12 +102,11 @@ namespace FluentCommandLineParser.Tests
 		#region Format
 
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void Ensure_Cannot_Specify_Null_options_Param()
 		{
 			var formatter = new CommandLineOptionFormatter();
 
-			formatter.Format(null);
+            Assert.Throws<ArgumentNullException>(() => formatter.Format(null));
 		}
 
 		[Test]

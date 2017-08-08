@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Fclp.Internals.Parsing.OptionParsers
 {
@@ -106,9 +107,9 @@ namespace Fclp.Internals.Parsing.OptionParsers
         /// <returns>True if a special parser was added for the type; otherwise false.</returns>
         private bool TryAddAsSpecialParser<T>(Type type)
         {
-            if (type.IsEnum)
+            if (type.GetTypeInfo().IsEnum)
             {
-                bool hasFlags = typeof(T).IsDefined(typeof(FlagsAttribute), false);
+                bool hasFlags = typeof(T).GetTypeInfo().IsDefined(typeof(FlagsAttribute), false);
 
                 Type enumParserType = hasFlags ?
                     typeof(EnumFlagCommandLineOptionParser<T>) :
@@ -129,13 +130,13 @@ namespace Fclp.Internals.Parsing.OptionParsers
                 return true;
             }
 
-            if (type.IsGenericType)
+            if (type.GetTypeInfo().IsGenericType)
             {
                 var genericType = TryGetListGenericType(type);
 
                 if (genericType != null)
                 {
-                    if (genericType.IsEnum || IsNullableEnum(genericType))
+                    if (genericType.GetTypeInfo().IsEnum || IsNullableEnum(genericType))
                     {
                         var enumListParserType = typeof(ListCommandLineOptionParser<>).MakeGenericType(genericType);
                         var parser = (ICommandLineOptionParser<T>)Activator.CreateInstance(enumListParserType, this);
@@ -170,7 +171,7 @@ namespace Fclp.Internals.Parsing.OptionParsers
         private static bool IsNullableEnum(Type t)
         {
             Type u = Nullable.GetUnderlyingType(t);
-            return (u != null) && u.IsEnum;
+            return (u != null) && u.GetTypeInfo().IsEnum;
         }
 
         /// <summary>
@@ -178,10 +179,12 @@ namespace Fclp.Internals.Parsing.OptionParsers
         /// </summary>
         private static Type TryGetListGenericType(Type type)
         {
-            if (type.IsGenericType && type.GetGenericTypeDefinition()
+            if (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition()
                 == typeof(List<>))
             {
-                return type.GetGenericArguments()[0];
+                return (type.GetTypeInfo().IsGenericTypeDefinition
+                    ? type.GetTypeInfo().GenericTypeParameters
+                    : type.GetTypeInfo().GenericTypeArguments)[0];
             }
 
             return null;

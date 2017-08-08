@@ -91,7 +91,7 @@ namespace Fclp.Internals.Parsing
 		/// </summary>
 		static bool IsEndOfOptionsKey(string arg)
 		{
-			return string.Equals(arg, SpecialCharacters.EndOfOptionsKey, StringComparison.InvariantCultureIgnoreCase);
+			return string.Equals(arg, SpecialCharacters.EndOfOptionsKey, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

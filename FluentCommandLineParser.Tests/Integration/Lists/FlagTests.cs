@@ -21,70 +21,68 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 // POSSIBILITY OF SUCH DAMAGE.
 #endregion
-
+#if xunitfixed
 using System.Collections.Generic;
 using Fclp.Tests.FluentCommandLineParser;
 using Fclp.Tests.Internals;
-using Machine.Specifications;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Fclp.Tests.Integration
 {
-    public class FlagTests : TestContextBase<Fclp.FluentCommandLineParser>
+    public class FlagTests
     {
         [Theory]
-        [EnumFlagListInlineData("--flag Value0 Value1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("-f Value0 Value1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("/flag Value0 Value1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("/flag:Value0 Value1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("/flag=Value0 Value1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("--flag:Value0 Value1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("--flag=Value0 Value1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("--flag 0 1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("-f 0 1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("/flag 0 1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("/flag:0 1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("/flag=0 1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("--flag:0 1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
-        [EnumFlagListInlineData("--flag=0 1", TestEnumFlag.Value0, TestEnumFlag.Value1)]
+        [InlineData("--flag Value0 Value1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("-f Value0 Value1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("/flag Value0 Value1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("/flag:Value0 Value1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("/flag=Value0 Value1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("--flag:Value0 Value1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("--flag=Value0 Value1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("--flag 0 1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("-f 0 1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("/flag 0 1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("/flag:0 1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("/flag=0 1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("--flag:0 1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
+        [InlineData("--flag=0 1", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1 })]
 
-        [EnumFlagListInlineData("--flag Value0 Value1 Value16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("-f Value0 Value1 Value16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("/flag Value0 Value1 Value16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("/flag:Value0 Value1 Value16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("/flag=Value0 Value1 Value16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("--flag:Value0 Value1 Value16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("--flag=Value0 Value1 Value16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("--flag 0 1 16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("-f 0 1 16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("/flag 0 1 16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("/flag:0 1 16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("/flag=0 1 16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("--flag:0 1 16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
-        [EnumFlagListInlineData("--flag=0 1 16", TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16)]
+        [InlineData("--flag Value0 Value1 Value16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("-f Value0 Value1 Value16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("/flag Value0 Value1 Value16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("/flag:Value0 Value1 Value16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("/flag=Value0 Value1 Value16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("--flag:Value0 Value1 Value16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("--flag=Value0 Value1 Value16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("--flag 0 1 16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("-f 0 1 16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("/flag 0 1 16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("/flag:0 1 16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("/flag=0 1 16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("--flag:0 1 16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
+        [InlineData("--flag=0 1 16", new[] { TestEnumFlag.Value0, TestEnumFlag.Value1, TestEnumFlag.Value16 })]
         private void should_contain_list_with_expected_items<T>(string arguments, IEnumerable<TestEnumFlag> expectedItems)
         {
-            sut = new Fclp.FluentCommandLineParser();
+            var sut = new Fclp.FluentCommandLineParser();
 
             var actualEnum = TestEnumFlag.Value0;
 
             sut.Setup<TestEnumFlag>('f', "flag").Callback(items => actualEnum = items).Required();
 
-            var args = ParseArguments(arguments);
+            var args = arguments.ParseArguments();
 
             var results = sut.Parse(args);
-
-            results.HasErrors.ShouldBeFalse();
+            Assert.False(results.HasErrors);
             foreach (var expectedItem in expectedItems)
             {
-                actualEnum.HasFlag(expectedItem).ShouldBeTrue();
+                Assert.True(actualEnum.HasFlag(expectedItem));
             }
 
-            actualEnum.HasFlag(TestEnumFlag.Value2).ShouldBeFalse();
-            actualEnum.HasFlag(TestEnumFlag.Value4).ShouldBeFalse();
-            actualEnum.HasFlag(TestEnumFlag.Value8).ShouldBeFalse();
+            Assert.False(actualEnum.HasFlag(TestEnumFlag.Value2));
+            Assert.False(actualEnum.HasFlag(TestEnumFlag.Value4));
+            Assert.False(actualEnum.HasFlag(TestEnumFlag.Value8));
 
         }
     }
 }
+#endif

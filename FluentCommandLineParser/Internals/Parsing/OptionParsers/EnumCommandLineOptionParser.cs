@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fclp.Internals.Extensions;
+using System.Reflection;
 
 namespace Fclp.Internals.Parsing.OptionParsers
 {
@@ -47,7 +48,7 @@ namespace Fclp.Internals.Parsing.OptionParsers
 		public EnumCommandLineOptionParser()
 		{
 			var type = typeof(TEnum);
-			if (!type.IsEnum) throw new ArgumentException(string.Format("T must be an System.Enum but is '{0}'", type));
+			if (!type.GetTypeInfo().IsEnum) throw new ArgumentException(string.Format("T must be an System.Enum but is '{0}'", type));
 
 			_all = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToList();
 			_insensitiveNames = _all.ToDictionary(k => Enum.GetName(typeof(TEnum), k).ToLowerInvariant());
